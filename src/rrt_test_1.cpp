@@ -104,3 +104,4 @@ int main()
   //node q_near=main_tree.nearestVertex(q_rand);
   return(0);
 }
+//.
