@@ -29,6 +29,13 @@ public:
     this->row=row;
   }
 
+  //return the sum of square of the coordinates of the node
+  //useful when comparinfg distance to another node
+  int getSquareOfCoordinates()
+  {
+    return(col*col + row*row);
+  }
+
   //just to verify that the node info is correct
   void display()
   {
@@ -55,7 +62,7 @@ public:
   {
     //declare iterator over the node list that contains all nodes
     list<node>::iterator i;
-    for(i=all_nodes.begin(); i!=all_nodes.end(); ++i)
+    for(i=all_nodes.begin(); i!=all_nodes.end(); i++)
       i->display();
   }
 
@@ -65,14 +72,33 @@ public:
   {
     srand(time(0));
     node q_rand(rand()%100, rand()%100);
+    cout<<"\nRandom is: ";
+    q_rand.display();
     return q_rand;
+  }
+
+  //returns the absolute squre of distance between two nodes
+  int distanceBetween(node node1, node node2)
+  {
+    return abs(node1.getSquareOfCoordinates()-node2.getSquareOfCoordinates());
   }
 
   //this function picks the vertex on the tree that is
   //closest to the random node generated q_rand
   node nearestVertex(node q_rand)
   {
+    list<node>::iterator i;
+    node q_near=*all_nodes.begin();//set q_near to root node. using
+    //*all_nodes.begin() because all_nodes.begin() returns pointer
 
+    //if the iterator node is closer to q_rand than q_near
+    //then set q_near to the iterator node
+    for(i=all_nodes.begin(); i!=all_nodes.end(); i++)
+    {
+      q_near=(distanceBetween(q_rand, *i) < distanceBetween(q_rand, q_near))?*i:q_near;
+    }
+    cout<<"\nNearsets to random us: ";
+    q_near.display();
   }
 };
 
@@ -97,11 +123,10 @@ int main()
 
   node q_rand=main_tree.generateRandomConfig();
 
-  main_tree.addNode(q_rand);
-
   main_tree.showAllNodes();
+
+  main_tree.nearestVertex(q_rand);
 
   //node q_near=main_tree.nearestVertex(q_rand);
   return(0);
 }
-//.

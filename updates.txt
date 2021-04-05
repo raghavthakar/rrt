@@ -1,0 +1,3 @@
+added functionality to pick a random point and find the node closest to it
+now need to write the function that adds node at step distance
+need to do something about making parent node too
