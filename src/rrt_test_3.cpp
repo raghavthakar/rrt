@@ -69,6 +69,8 @@ public:
   {
     cout<<"Column number: "<<col<<endl;
     cout<<"Row number: "<<row<<endl;
+    // cout<<"Parent Column number: "<<parent->getCol()<<endl;
+    // cout<<"Parent Row number: "<<parent->getRow()<<endl;
   }
 };
 
@@ -172,6 +174,19 @@ public:
       return q_new;
     }
   }
+
+  void addEdge(node q_near)
+  {
+    // node* q_new=all_nodes.end();
+    for(list<node>::iterator i=all_nodes.begin(); i!=all_nodes.end(); i++)
+    {
+      if(i->getCol()==q_near.getCol()&&i->getRow()==q_near.getRow())
+      {
+        cout<<"In the addEdge fn: \n";
+        i->display();
+      }
+    }
+  }
 };
 
 int main()
@@ -194,6 +209,7 @@ int main()
     q_near=main_tree.nearestVertex(q_rand);
     q_new=main_tree.newConfiguration(q_near, q_rand);
     main_tree.addNode(q_new);
+    main_tree.addEdge(q_near);
   }
 
   main_tree.showAllNodes();
