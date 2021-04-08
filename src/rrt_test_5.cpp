@@ -155,6 +155,7 @@ public:
       if(i->getCol()==q_near->getCol()&&i->getRow()==q_near->getRow())
       {
         all_nodes.back().parent=&(*i);
+        i->child_nodes.push_back(all_nodes.back());
       }
     }
   }
