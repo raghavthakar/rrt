@@ -1,2 +1,2 @@
-need to add new node to list of child nodes of near node
 need to handle case where new node is same as already present node
+what to do if new node is created on an obstacle

@@ -131,6 +131,8 @@ public:
 
   node* newConfiguration(node* q_rand, node* q_near)
   {
+    node* q_new;
+    bool repeat_coordinates=false;
     if(distanceBetween(*q_rand, *q_near)>MAX_STEP_LENGTH)
     {
       float scale_factor=(float)MAX_STEP_LENGTH/distanceBetween(*q_rand, *q_near);
@@ -141,14 +143,14 @@ public:
       int new_col=q_near->getCol()+scale_factor*col_diff;
       int new_row=q_near->getRow()+scale_factor*row_diff;
 
-      node* q_new=new node(new_col, new_row);
+      q_new=new node(new_col, new_row);
       return q_new;
     }
     //if the sampled point is less than step_length units away then set
     //q_new as the sampled q_rand itself
     else
     {
-      node *q_new=new node(q_rand);
+      q_new=new node(q_rand);
       return q_new;
     }
   }
@@ -192,7 +194,7 @@ int main()
 
   main_tree.addNode(q_root);
 
-  for(int i=0; i<10; i++)
+  for(int i=0; i<100; i++)
   {
     q_rand=main_tree.generateRandomConfig();
     cout<<"Randomly sampled point is: \n";
@@ -210,7 +212,7 @@ int main()
 
     main_tree.addEdge(q_near);
     cout<<endl;
-    sleep(1);
+    usleep(400000);
   }
 
   main_tree.showAllNodes();
