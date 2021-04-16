@@ -1,5 +1,5 @@
 #include<iostream>
-#include<stdio.h>
+#include<fstream>
 #include<list>
 #include<time.h>
 #include<cmath>
@@ -170,11 +170,21 @@ public:
   //to display the info of all the nodes part of the rrt_tree
   void showAllNodes()
   {
-    //declare iterator over the node list that contains all nodes
+    //declare iterator over the node list that contains all odes
     for(list<node>::iterator i=all_nodes.begin(); i!=all_nodes.end(); i++)
     {
       i->displayWithParentInfo();
       cout<<endl;
+    }
+  }
+
+  void writeToCSV()
+  {
+    ofstream csv_file;
+    csv_file.open("tree.csv");
+    for(list<node>::iterator i=all_nodes.begin(); i!=all_nodes.end(); i++)
+    {
+      csv_file<<i->getCol()<<","<<i->getRow()<<","<<i->parent->getCol()<<","<<i->parent->getRow()<<endl;
     }
   }
 };
@@ -194,7 +204,7 @@ int main()
 
   main_tree.addNode(q_root);
 
-  for(int i=0; i<100; i++)
+  for(int i=0; i<25; i++)
   {
     q_rand=main_tree.generateRandomConfig();
     cout<<"Randomly sampled point is: \n";
@@ -212,10 +222,12 @@ int main()
 
     main_tree.addEdge(q_near);
     cout<<endl;
-    usleep(400000);
+    usleep(1000000);
   }
 
   main_tree.showAllNodes();
+
+  main_tree.writeToCSV();
 
   return(0);
 }
