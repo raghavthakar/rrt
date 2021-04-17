@@ -4,8 +4,14 @@
 #include<time.h>
 #include<cmath>
 #include<unistd.h>
-#define MAX_STEP_LENGTH 10
+#include<random>
+#define MAX_STEP_LENGTH 50
 #define ILLEGAL_NODE -50
+#define ROOT_COORDINATE 49
+#define TARGET_COL 99
+#define TARGET_ROW 99
+#define ITERATIONS 300
+#define SLEEP_TIME 100000
 
 using namespace std;
 
@@ -124,8 +130,8 @@ public:
 
   node* generateRandomConfig()
   {
-    srand(time(0));
-    node* q_rand=new node(rand()%100, rand()%100);//NOTE: must be %100
+    mt19937 mt(time(nullptr));
+    node* q_rand=new node(mt()%1000, mt()%1000);//NOTE: must be %100
     return q_rand;
   }
 
@@ -208,16 +214,22 @@ public:
     }
   }
 
-  //Writes all the node to a csv file
-  //Format: col_num, row_num, parent_col_num, parent_row_num
-  void writeToCSV()
+  //Clears the CSV file
+  void clearCSV()
   {
     ofstream csv_file;
     csv_file.open("tree.csv");
-    for(list<node>::iterator i=all_nodes.begin(); i!=all_nodes.end(); i++)
-    {
-      csv_file<<i->getCol()<<","<<i->getRow()<<","<<i->parent->getCol()<<","<<i->parent->getRow()<<endl;
-    }
+    csv_file.close();
+  }
+
+  //Writes all the node to a csv file
+  //Format: col_num, row_num, parent_col_num, parent_row_num
+  void writeNodeToCSV()
+  {
+    ofstream csv_file;
+    csv_file.open("tree.csv", ios::app);
+    csv_file<<all_nodes.back().getCol()<<","<<all_nodes.back().getRow()<<","<<all_nodes.back().parent->getCol()<<","<<all_nodes.back().parent->getRow()<<endl;
+    csv_file.close();
   }
 };
 
@@ -226,19 +238,22 @@ int main()
   cout<<"Hello world!\n";
   rrt_tree main_tree;
 
-  node* q_null=new node(69, 69);
+  node* q_null=new node(ROOT_COORDINATE, ROOT_COORDINATE);
 
   node* q_rand;
   node* q_near;
   node* q_new;
-  node* q_root=new node(49, 49);
+  node* q_root=new node(ROOT_COORDINATE, ROOT_COORDINATE);
   q_root->parent=q_null;
 
   main_tree.addNode(q_root);
 
-  for(int i=0; i<50; i++)
+  main_tree.clearCSV();
+  main_tree.writeNodeToCSV();
+
+  for(int i=0; i<ITERATIONS; i++)
   {
-    usleep(100000);
+    usleep(SLEEP_TIME);
 
     q_rand=main_tree.generateRandomConfig();
     cout<<"Randomly sampled point is: \n";
@@ -260,19 +275,23 @@ int main()
 
     else
     {
-    cout<<"New node made at: \n";
-    q_new->display();
+      cout<<"New node made at: \n";
+      q_new->display();
 
-    main_tree.addNode(q_new);
+      main_tree.addNode(q_new);
 
-    main_tree.addEdge(q_near);
-    cout<<endl;
+      main_tree.addEdge(q_near);
+
+      main_tree.writeNodeToCSV();
+
+      cout<<endl;
+
+      if(q_new->getCol()==TARGET_COL&&q_new->getRow()==TARGET_ROW)
+        break;
     }
   }
 
   main_tree.showAllNodes();
-
-  main_tree.writeToCSV();
 
   return(0);
 }
