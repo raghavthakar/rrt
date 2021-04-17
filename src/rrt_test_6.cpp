@@ -5,6 +5,7 @@
 #include<cmath>
 #include<unistd.h>
 #define MAX_STEP_LENGTH 10
+#define ILLEGAL_NODE -50
 
 using namespace std;
 
@@ -110,6 +111,17 @@ public:
     return sqrt(pow((node1.getCol()-node2.getCol()), 2) + pow((node1.getRow()-node2.getRow()), 2));
   }
 
+  //tells whether a noed at given coordinates is legal or not
+  bool isLegal(int new_col, int new_row)
+  {
+    for(list<node>::iterator i=all_nodes.begin(); i!=all_nodes.end(); i++)
+    {
+      if(i->getCol()==new_col&&i->getRow()==new_row)
+        return false;
+    }
+    return true;
+  }
+
   node* generateRandomConfig()
   {
     srand(time(0));
@@ -143,14 +155,30 @@ public:
       int new_col=q_near->getCol()+scale_factor*col_diff;
       int new_row=q_near->getRow()+scale_factor*row_diff;
 
-      q_new=new node(new_col, new_row);
+      //RESTARTS THE NODE MAKING PrOCESS IF NEW NODE IS ILLEGAL
+      if(!isLegal(new_col, new_row))
+      {
+        cout<<"Illegal node. Should try again. \n";
+        q_new=new node(ILLEGAL_NODE, ILLEGAL_NODE);
+      }
+      else
+        q_new=new node(new_col, new_row);
+
       return q_new;
     }
     //if the sampled point is less than step_length units away then set
     //q_new as the sampled q_rand itself
     else
     {
-      q_new=new node(q_rand);
+      //RESTARTS THE NODE MAKING PrOCESS IF NEW NODE IS ILLEGAL
+      if(!isLegal(q_rand->getCol(), q_rand->getRow()))
+      {
+        cout<<"Illegal node. Should try again. \n\n";
+        q_new=new node(ILLEGAL_NODE, ILLEGAL_NODE);
+      }
+      else
+        q_new=new node(q_rand);
+
       return q_new;
     }
   }
@@ -206,6 +234,8 @@ int main()
 
   for(int i=0; i<25; i++)
   {
+    usleep(100000);
+
     q_rand=main_tree.generateRandomConfig();
     cout<<"Randomly sampled point is: \n";
     q_rand->display();
@@ -215,6 +245,17 @@ int main()
     q_near->display();
 
     q_new=main_tree.newConfiguration(q_rand, q_near);
+
+    //If the newConfiguration is illegal, repeat iteration of the loop
+    //to try again
+    if(q_new->getCol()==ILLEGAL_NODE||q_new->getRow()==ILLEGAL_NODE)
+    {
+      i--;
+      continue;
+    }
+
+    else
+    {
     cout<<"New node made at: \n";
     q_new->display();
 
@@ -222,7 +263,7 @@ int main()
 
     main_tree.addEdge(q_near);
     cout<<endl;
-    usleep(1000000);
+    }
   }
 
   main_tree.showAllNodes();

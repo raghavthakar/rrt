@@ -1,2 +1,6 @@
-need to handle case where new node is same as already present node
+Done for repeat nodes.
+if illegal new node, return new node with value -50, -50. in main for loop
+if new node is -50,-50, decrement iterator by 1. Will cause repeat iteration
+
 what to do if new node is created on an obstacle
+same as above. How to decide if node on obstacle?
