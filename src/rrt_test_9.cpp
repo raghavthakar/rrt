@@ -12,6 +12,7 @@
 #define TARGET_ROW 99
 #define ITERATIONS 300
 #define SLEEP_TIME 100000
+#define MAP_LENGTH 1000
 
 using namespace std;
 
@@ -131,7 +132,7 @@ public:
   node* generateRandomConfig()
   {
     mt19937 mt(time(nullptr));
-    node* q_rand=new node(mt()%1000, mt()%1000);//NOTE: must be %100
+    node* q_rand=new node(mt()%MAP_LENGTH, mt()%MAP_LENGTH);//NOTE: must be %100
     return q_rand;
   }
 
