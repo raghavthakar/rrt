@@ -1,10 +1,11 @@
-#include<iostream>
-#include<fstream>
-#include<list>
-#include<time.h>
-#include<cmath>
-#include<unistd.h>
-#include<random>
+#include <iostream>
+#include <fstream>
+#include <list>
+#include <time.h>
+#include <cmath>
+#include <unistd.h>
+#include <random>
+
 #define MAX_STEP_LENGTH 50
 #define ILLEGAL_NODE -50
 #define ROOT_COORDINATE 49
@@ -14,6 +15,7 @@
 #define SLEEP_TIME 500000
 #define MAP_LENGTH 1000
 
+// Because I am a terrrible person
 using namespace std;
 
 //when the closest Node to the sampled point is determined,
@@ -127,17 +129,23 @@ public:
 
   Map()
   {
-    int tl[2], br[2]; //cool
+    int tlc, tlr, brc, brr;
     cout<<"Enter top left column number: ";
-    cin>>tl[0];
+    cin>>tlc;
     cout<<"Enter top left row number: ";
-    cin>>tl[1];
+    cin>>tlr;
     cout<<"Enter bottom right column number: ";
-    cin>>br[0];
+    cin>>brc;
     cout<<"Enter bottom right row number: ";
-    cin>>br[1];
+    cin>>brr;
+
+    ofstream csv_file;
+    csv_file.open("obstacle.csv");
+    csv_file<<tlc<<","<<tlr<<","<<brc<<","<<brr<<endl;
+    csv_file.close();
+
     //push a test Obstacle
-    all_obstacles.push_back(*(new Obstacle(tl[0], tl[1], br[0], br[1])));
+    all_obstacles.push_back(*(new Obstacle(tlc, tlr, brc, brr)));
   }
 };
 
@@ -149,31 +157,41 @@ class rrt_tree
 
 public:
   //add a Node to the list of all nodes
-  void addNode(Node* new_node)
+  void addNode(Node* new_node) // ✓
   {
     all_nodes.push_back(*new_node);
   }
 
   //returns the absolute squre of distance between two nodes
-  int distanceBetween(Node node1, Node node2)
+  int distanceBetween(Node node1, Node node2) // ✓
   {
     //this is literal black magic
     return sqrt(pow((node1.getCol()-node2.getCol()), 2) + pow((node1.getRow()-node2.getRow()), 2));
   }
 
   //tells whether a noed at given coordinates is legal or not
-  bool isLegal(int new_col, int new_row)
+  bool isLegal(int new_col, int new_row, Map rrt_map)
   {
+    //Checking if the new proposed node on an existing vertex of the tree
     for(list<Node>::iterator i = all_nodes.begin(); i!=all_nodes.end(); i++)
     {
       if(i->getCol()==new_col&&i->getRow()==new_row)
         return false;
     }
+
+    //checking if the proposed new node lies in an obsacle
+    //How to do it: start from top left corner to bottom right, create list of
+    //illegal rows and columns (br[0]-tl[0]->rows)
+    if(new_col<=rrt_map.all_obstacles.back().bottom_right_column && new_col>=rrt_map.all_obstacles.back().top_left_column)
+      if(new_row<=rrt_map.all_obstacles.back().bottom_right_row && new_row>=rrt_map.all_obstacles.back().top_left_row)
+        return false;
+
     return true;
   }
 
-  Node* generateRandomConfig()
+  Node* generateRandomConfig() // ✓
   {
+    //literal black magic
     mt19937 mt(time(nullptr));
     Node* q_rand = new Node(mt()%MAP_LENGTH, mt()%MAP_LENGTH);//NOTE: must be %100
     return q_rand;
@@ -191,7 +209,7 @@ public:
     return q_near;
   }
 
-  Node* newConfiguration(Node* q_rand, Node* q_near)
+  Node* newConfiguration(Node* q_rand, Node* q_near, Map rrt_map)
   {
     Node* q_new;
     bool repeat_coordinates = false;
@@ -206,7 +224,7 @@ public:
       int new_row = q_near->getRow()+scale_factor*row_diff;
 
       //RESTARTS THE Node MAKING PrOCESS IF NEW Node IS ILLEGAL
-      if(!isLegal(new_col, new_row))
+      if(!isLegal(new_col, new_row, rrt_map))
       {
         cout<<"Illegal Node. Should try again. \n";
         q_new = new Node(ILLEGAL_NODE, ILLEGAL_NODE);
@@ -221,7 +239,7 @@ public:
     else
     {
       //RESTARTS THE Node MAKING PrOCESS IF NEW Node IS ILLEGAL
-      if(!isLegal(q_rand->getCol(), q_rand->getRow()))
+      if(!isLegal(q_rand->getCol(), q_rand->getRow(), rrt_map))
       {
         cout<<"Illegal Node. Should try again. \n\n";
         q_new = new Node(ILLEGAL_NODE, ILLEGAL_NODE);
@@ -312,7 +330,7 @@ int main()
     cout<<"Nearest Node is: \n";
     q_near->display();
 
-    q_new = main_tree.newConfiguration(q_rand, q_near);
+    q_new = main_tree.newConfiguration(q_rand, q_near, rrt_map);
 
     //If the newConfiguration is illegal, repeat iteration of the loop
     //to try again
