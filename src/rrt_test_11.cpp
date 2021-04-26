@@ -5,14 +5,15 @@
 #include <cmath>
 #include <unistd.h>
 #include <random>
+#include <chrono>
 
 #define MAX_STEP_LENGTH 50
 #define ILLEGAL_NODE -50
 #define ROOT_COORDINATE 49
 #define TARGET_COL 99
 #define TARGET_ROW 99
-#define ITERATIONS 300
-#define SLEEP_TIME 500000
+#define ITERATIONS 1000
+#define SLEEP_TIME 1000
 #define MAP_LENGTH 1000
 
 // Because I am a terrrible person
@@ -192,7 +193,7 @@ public:
   Node* generateRandomConfig() // ✓
   {
     //literal black magic
-    mt19937 mt(time(nullptr));
+    mt19937 mt(chrono::steady_clock::now().time_since_epoch().count());
     Node* q_rand = new Node(mt()%MAP_LENGTH, mt()%MAP_LENGTH);//NOTE: must be %100
     return q_rand;
   }
