@@ -36,6 +36,24 @@ def showDot(node_info):
 
     pygame.draw.circle(screen, (250, 250, 250), (col, row), 5)
 
+# overloaded to Consider the special start and end points
+def showSpecialDot(col, row):
+    col=int(col)
+    row=int(row)
+
+    pygame.draw.circle(screen, (0, 0, 250), (col, row), 7)
+
+# -----------------------SHOW TARGET BOX----------------------------------------
+def showTargetBox(col, row, radius):
+    col=int(col)
+    row=int(row)
+    radius=int(radius)
+
+    target_rectangle=pygame.Rect(int(col-radius), int(row-radius),
+        radius*2, radius*2)
+
+    pygame.draw.rect(screen, (250, 250, 0), target_rectangle)
+
 # ------------------------SHOW EDGE---------------------------------------------
 def showEdge(node_info):
     col=int(node_info[0])
@@ -50,10 +68,20 @@ print("Hello World!")
 running = True
 
 #-----------------------get obstacle from csv-----------------------------------
-with open('../src/obstacle.csv', 'r') as csv_file:
+with open('../src/map.csv', 'r') as csv_file:
     reader = csv.reader(csv_file, delimiter = ',')
     obstacle_info=next(reader)
     showObstacle(obstacle_info)
+
+    starting_point_info=next(reader)
+    showSpecialDot(starting_point_info[0], starting_point_info[1]);
+
+    target_point_info=next(reader)
+
+    target_radius_info=next(reader)
+    showTargetBox(target_point_info[0], target_point_info[1], target_radius_info[0])
+
+    showSpecialDot(target_point_info[0], target_point_info[1]);
 
 #-----------------------csv file reading-------------------
 #Execute the main loop, reading one row of csv every iteration

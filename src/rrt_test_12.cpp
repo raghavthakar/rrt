@@ -107,6 +107,13 @@ public:
 class Map
 {
 public:
+  int starting_column;
+  int starting_row;
+
+  int target_column;
+  int target_row;
+
+  int radius;
   //This structure specifies the four corners of an Obstacle
   struct Obstacle
   {
@@ -130,19 +137,42 @@ public:
 
   Map()
   {
+    cout<<"Enter starting column number: ";
+    cin>>this->starting_column;
+    cout<<"Enter starting row number: ";
+    cin>>this->starting_row;
+
+    cout<<"Enter target column number: ";
+    cin>>this->target_column;
+    cout<<"Enter target row number: ";
+    cin>>this->target_row;
+
+    cout<<"Enter radius around target: ";
+    cin>>this->radius;
+
     int tlc, tlr, brc, brr;
-    cout<<"Enter top left column number: ";
+    cout<<"Enter obstacle top left column number: ";
     cin>>tlc;
-    cout<<"Enter top left row number: ";
+    cout<<"Enter obstacle top left row number: ";
     cin>>tlr;
-    cout<<"Enter bottom right column number: ";
+    cout<<"Enter obstacle bottom right column number: ";
     cin>>brc;
-    cout<<"Enter bottom right row number: ";
+    cout<<"Enter obstacle bottom right row number: ";
     cin>>brr;
 
+    //Write obstacle data to csv file
     ofstream csv_file;
-    csv_file.open("obstacle.csv");
+    csv_file.open("map.csv");
     csv_file<<tlc<<","<<tlr<<","<<brc<<","<<brr<<endl;
+
+    //Write starting point data into csv file
+    csv_file<<starting_column<<","<<starting_row<<endl;
+
+    //Write target point data into csv file
+    csv_file<<target_column<<","<<target_row<<endl;
+
+    //Target radius write to csv
+    csv_file<<radius;
     csv_file.close();
 
     //push a test Obstacle
@@ -171,7 +201,7 @@ public:
   }
 
   //tells whether a noed at given coordinates is legal or not
-  bool isLegal(int new_col, int new_row, Map rrt_map)
+  bool isLegal(int new_col, int new_row, Map rrt_map, Node* q_near)
   {
     //Checking if the new proposed node on an existing vertex of the tree
     for(list<Node>::iterator i = all_nodes.begin(); i!=all_nodes.end(); i++)
@@ -189,7 +219,24 @@ public:
 
     //If the edge between q_near and q_new passes through an obstacle,
     //then q_new is still illegal. This checks that.
-    
+    //Consider a rectangle with opposite corners being q_near and q_new.
+    //If any portion of the rectangle overlaps an obstacle, then node is illegal
+    for(int i_col=q_near->getCol(); i_col!=new_col;
+      i_col+=(new_col-q_near->getCol())/abs(new_col-q_near->getCol()))//dividing the difference with magnitude gives +-1
+    {
+      for(int i_row=q_near->getRow(); i_row!=new_row;
+        i_row+=(new_row-q_near->getRow())/abs(new_row-q_near->getRow()))
+      {
+        if(i_col<=rrt_map.all_obstacles.back().bottom_right_column && i_col>=rrt_map.all_obstacles.back().top_left_column)
+          if(i_row<=rrt_map.all_obstacles.back().bottom_right_row && i_row>=rrt_map.all_obstacles.back().top_left_row)
+          {
+            cout<<"Nearest before problem: \n";
+            q_near->display();
+            cout<<"Present coords are col, row"<<new_col<<", "<<new_row<<endl;
+            return false;
+          }
+      }
+    }
 
     return true;
   }
@@ -229,7 +276,7 @@ public:
       int new_row = q_near->getRow()+scale_factor*row_diff;
 
       //RESTARTS THE Node MAKING PrOCESS IF NEW Node IS ILLEGAL
-      if(!isLegal(new_col, new_row, rrt_map))
+      if(!isLegal(new_col, new_row, rrt_map, q_near))
       {
         cout<<"Illegal Node. Should try again. \n";
         q_new = new Node(ILLEGAL_NODE, ILLEGAL_NODE);
@@ -244,7 +291,7 @@ public:
     else
     {
       //RESTARTS THE Node MAKING PrOCESS IF NEW Node IS ILLEGAL
-      if(!isLegal(q_rand->getCol(), q_rand->getRow(), rrt_map))
+      if(!isLegal(q_rand->getCol(), q_rand->getRow(), rrt_map, q_near))
       {
         cout<<"Illegal Node. Should try again. \n\n";
         q_new = new Node(ILLEGAL_NODE, ILLEGAL_NODE);
@@ -307,12 +354,15 @@ int main()
   cout<<"Hello world!\n";
   rrt_tree main_tree;
 
-  Node* q_null = new Node(ROOT_COORDINATE, ROOT_COORDINATE);
+  //Function to accept corners of rectiangular Obstacle
+  Map rrt_map;
+
+  Node* q_null = new Node(rrt_map.starting_column, rrt_map.starting_row);
 
   Node* q_rand;
   Node* q_near;
   Node* q_new;
-  Node* q_root = new Node(ROOT_COORDINATE, ROOT_COORDINATE);
+  Node* q_root = new Node(rrt_map.starting_column, rrt_map.starting_row);
   q_root->parent = q_null;
 
   main_tree.addNode(q_root);
@@ -320,10 +370,7 @@ int main()
   main_tree.clearCSV();
   main_tree.writeNodeToCSV();
 
-  //Function to accept corners of rectiangular Obstacle
-  Map rrt_map;
-
-  for(int i = 0; i<ITERATIONS; i++)
+  for(int i = 0; i>-1; i++)
   {
     usleep(SLEEP_TIME);
 
@@ -358,7 +405,10 @@ int main()
 
       cout<<endl;
 
-      if(q_new->getCol()==TARGET_COL&&q_new->getRow()==TARGET_ROW)
+      if(q_new->getCol()>=rrt_map.target_column-rrt_map.radius&&
+        q_new->getCol()<=rrt_map.target_column+rrt_map.radius&&
+        q_new->getRow()>=rrt_map.target_row-rrt_map.radius&&
+        q_new->getRow()<=rrt_map.target_row+rrt_map.radius)
         break;
     }
   }
