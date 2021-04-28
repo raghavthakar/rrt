@@ -1,4 +1,5 @@
 Done for repeat nodes.
 Done so that no new node us created on obstacle
+Done so that no edge crosses an obstacle corner
 Need to provide functionalityfor making new node in direction of proposed node on obstacle,
-but few units earlier. Also, so that no edge crosses an obstacle corner
+but few units earlier.

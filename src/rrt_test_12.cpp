@@ -185,6 +185,7 @@ public:
 class rrt_tree
 {
   list<Node> all_nodes;
+  list<Node> path;
 
 public:
   //add a Node to the list of all nodes
@@ -317,6 +318,17 @@ public:
     }
   }
 
+  //TRace parents from last node to root node
+  void tracePath()
+  {
+    list<Node> path;
+    for(Node  iterator=all_nodes.back(); iterator.parent; iterator=*(iterator.parent))
+    {
+      path.push_back(iterator);
+    }
+    this->path=path;
+  }
+
   //to display the info of all the nodes part of the rrt_tree
   void showAllNodes()
   {
@@ -328,11 +340,14 @@ public:
     }
   }
 
-  //Clears the CSV file
+  //Clears the CSV files
   void clearCSV()
   {
     ofstream csv_file;
     csv_file.open("tree.csv");
+    csv_file.close();
+
+    csv_file.open("path.csv");
     csv_file.close();
   }
 
@@ -347,6 +362,21 @@ public:
       <<all_nodes.back().parent->getRow()<<endl;
     csv_file.close();
   }
+
+  //to writw the info of all the nodes in path to csv file
+  void writePathToCSV()
+  {
+    ofstream csv_file;
+    csv_file.open("path.csv");
+    //declare iterator over the Node list that contains all odes
+    for(list<Node>::iterator i = path.begin(); i!=path.end(); i++)
+    {
+      csv_file<<i->getCol()<<","<<i->getRow()
+        <<","<<i->parent->getCol()<<","
+        <<i->parent->getRow()<<endl;
+    }
+    csv_file.close();
+  }
 };
 
 int main()
@@ -358,6 +388,7 @@ int main()
   Map rrt_map;
 
   Node* q_null = new Node(rrt_map.starting_column, rrt_map.starting_row);
+  q_null->parent = NULL;
 
   Node* q_rand;
   Node* q_near;
@@ -414,6 +445,10 @@ int main()
   }
 
   main_tree.showAllNodes();
+
+  main_tree.tracePath();
+
+  main_tree.writePathToCSV();
 
   return(0);
 }
