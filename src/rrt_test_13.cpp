@@ -227,10 +227,13 @@ public:
     //checking if the proposed new node lies in an obsacle
     //How to do it: start from top left corner to bottom right, create list of
     //illegal rows and columns (br[0]-tl[0]->rows)
-    for(rrt_map.obs_it=rrt_map.all_obstacles.begin(); rrt_map.obs_it!=rrt_map.all_obstacles.end(); rrt_map.obs_it++)
+    for(rrt_map.obs_it=rrt_map.all_obstacles.begin();
+      rrt_map.obs_it!=rrt_map.all_obstacles.end(); rrt_map.obs_it++)
     {
-      if(new_col<=rrt_map.obs_it->bottom_right_column && new_col>=rrt_map.obs_it->top_left_column)
-        if(new_row<=rrt_map.obs_it->bottom_right_row && new_row>=rrt_map.obs_it->top_left_row)
+      if(new_col<=rrt_map.obs_it->bottom_right_column &&
+        new_col>=rrt_map.obs_it->top_left_column)
+        if(new_row<=rrt_map.obs_it->bottom_right_row &&
+          new_row>=rrt_map.obs_it->top_left_row)
           return false;
     }
 
@@ -244,10 +247,13 @@ public:
       for(int i_row=q_near->getRow(); i_row!=new_row;
         i_row+=(new_row-q_near->getRow())/abs(new_row-q_near->getRow()))
       {
-        for(rrt_map.obs_it=rrt_map.all_obstacles.begin(); rrt_map.obs_it!=rrt_map.all_obstacles.end(); rrt_map.obs_it++)
+        for(rrt_map.obs_it=rrt_map.all_obstacles.begin();
+          rrt_map.obs_it!=rrt_map.all_obstacles.end(); rrt_map.obs_it++)
         {
-          if(i_col<=rrt_map.obs_it->bottom_right_column && i_col>=rrt_map.obs_it->top_left_column)
-            if(i_row<=rrt_map.obs_it->bottom_right_row && i_row>=rrt_map.obs_it->top_left_row)
+          if(i_col<=rrt_map.obs_it->bottom_right_column &&
+            i_col>=rrt_map.obs_it->top_left_column)
+            if(i_row<=rrt_map.obs_it->bottom_right_row &&
+              i_row>=rrt_map.obs_it->top_left_row)
             {
               cout<<"Nearest before problem: \n";
               q_near->display();
