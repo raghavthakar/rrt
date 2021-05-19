@@ -5,6 +5,9 @@ RRT, or Rapidly Exploring Random Tree is an algorithm designed to search spaces 
 
 To run this example, simply run and compile the C++ code in the `/src` directory. In a new terminal, run the Python(3) code in the `/scripts` directory.
 
+Use the command `g++ -o rrt rrt.cpp && ./rrt` in the `/src` directory.
+To visualise the tree generated, run `python3 visaliser.py` in the `/scripts` directory.
+
 This implementation of the algorithm involves 3 major classes, which are:
 - `Node`: Single vertex in the main tree
 - `rrt_tree`: Contains all the functionality associated with creating/modifying/adding new nodes
