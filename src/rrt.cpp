@@ -198,7 +198,9 @@ class rrt_tree
 {
   list<Node> all_nodes;
   list<Node> path;
-  double distance_between_nodes;
+  list<int> distance_between_nodes;
+  list<double> angle_between_nodes;
+
   // Cost include :
   // Distance between two nodes
   // Cost of turning angle between two nodes
@@ -217,6 +219,47 @@ public:
     return sqrt(pow((node1.getCol() - node2.getCol()), 2) + pow((node1.getRow() - node2.getRow()), 2));
   }
 
+  void addAngleDeviated() // ✓
+  {
+   for (list<Node>::iterator i = all_nodes.begin() ; i != all_nodes.end(); i++){
+
+      if(i->parent && i->parent->parent){
+          Node *parentNode = i->parent;
+          Node *superParentNode = i->parent->parent;
+
+          // Calculate slope between currNode and parentNode
+          double angle_curr_parent = atan2((parentNode->getCol() - i->getCol()), (parentNode->getRow() - i->getRow()) );
+
+          // Calculate slope between superParentNode and parentNode
+
+          double angle_parent_super = atan2((parentNode->getCol() - superParentNode->getCol()), (parentNode->getRow() - superParentNode->getRow()) );
+
+          double angle = (angle_parent_super - angle_curr_parent) * 180 / 3.14;
+
+          angle_between_nodes.push_back(angle);
+      }
+      else angle_between_nodes.push_back(0);
+
+      
+   }
+
+    // Base is basically the line connecting target and root nodes
+    // return sqrt(pow((node1.getCol() - node2.getCol()), 2) + pow((node1.getRow() - node2.getRow()), 2));
+
+  }
+  void insertDistanceBetweenNodes(){
+    
+    // inserting distance between nodes
+   for (list<Node>::iterator i = all_nodes.begin() ; i != all_nodes.end(); i++){
+      if(i->parent)
+      {
+           distance_between_nodes.push_back(distanceBetween(*i, i->parent));
+      }
+      else distance_between_nodes.push_back(0);
+      
+   }
+
+  }
   //tells whether a noed at given coordinates is legal or not
   bool isLegal(int new_col, int new_row, Map rrt_map, Node *q_near)
   {
@@ -355,6 +398,8 @@ public:
       path.push_back(iterator);
     }
     this->path = path;
+    insertDistanceBetweenNodes();
+    addAngleDeviated();
   }
 
   //to display the info of all the nodes part of the rrt_tree
@@ -456,6 +501,7 @@ int main()
 
       else
       {
+        cout << "\n===========NEW NODE==============\n"; 
         cout << "New Node made at: \n";
         q_new->display();
 
@@ -464,6 +510,7 @@ int main()
         main_tree[f].addEdge(q_near);
 
         // main_tree[f].writeNodeToCSV();
+        // main_tree[f].insertDistanceBetweenNodes(q_new, q_new->parent ? q_new->parent : q_root);
 
         cout << endl;
 
@@ -473,6 +520,7 @@ int main()
             q_new->getRow() <= rrt_map.target_row + rrt_map.radius)
           break;
       }
+
     }
 
     main_tree[f].showAllNodes();

@@ -2,7 +2,7 @@
 import pygame
 import csv
 import time
-
+import random
 pygame.init()
 
 #---------------------SCREEN SETUP----------------------------------------------
@@ -123,8 +123,11 @@ with open('../src/path.csv', 'r') as csv_file:
 
         try:
             node_info = next(reader)
+            rval = random.randint(0,255)
+            gval = random.randint(0,255)
+            bval = random.randint(0,255)
             #show an edge from node to parent node
-            showEdge(node_info, (0, 50, 0), 5)
+            showEdge(node_info, (rval, gval, bval), 5)
 
         except:
             pass
