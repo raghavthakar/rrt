@@ -1,0 +1,14 @@
+900 // Starting node column position
+20  // Starting node row position
+740 // Target node column position
+950 // Target node row position
+50   // Node radius
+2   // Number of obstacles
+600 // Obstacle Top Left Col position
+60  // Obstacle Top Left Row position
+800 // Obstacle Bottom Right Row position  
+300 // Obstacle Bottom Right Row position 
+200 // Obstacle Top Left Col position 
+870 // Obstacle Top Left Row position 
+400 // Obstacle Bottom Right Row position 
+900 // Obstacle Bottom Right Row position 

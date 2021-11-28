@@ -91,25 +91,25 @@ with open('../src/map.csv', 'r') as csv_file:
 
 #-----------------------csv file reading-------------------
 #Execute the main loop, reading one row of csv every iteration
-with open('../src/tree.csv', 'r') as csv_file:
-    reader = csv.reader(csv_file, delimiter = ',')
+# with open('../src/tree.csv', 'r') as csv_file:
+#     reader = csv.reader(csv_file, delimiter = ',')
 
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running=False
+#     while running:
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 running=False
 
-        try:
-            node_info = next(reader)
-            # Show a dot at node location
-            showDot(node_info)
-            #show an edge from node to parent node
-            showEdge(node_info, (100, 200, 150), 2)
+#         try:
+#             node_info = next(reader)
+#             # Show a dot at node location
+#             showDot(node_info)
+#             #show an edge from node to parent node
+#             showEdge(node_info, (100, 200, 150), 2)
 
-        except:
-            break;
+#         except:
+#             break;
 
-        pygame.display.flip()
+#         pygame.display.flip()
         # time.sleep(0.1)
 
 #--------------------path display--------------------------------
@@ -130,4 +130,4 @@ with open('../src/path.csv', 'r') as csv_file:
             pass
 
         pygame.display.flip()
-        time.sleep(0.1)
+    time.sleep(0.02)
